@@ -21,3 +21,6 @@ Host someinternalhost
     User overmind88
     ProxyCommand ssh overmind88@35.204.213.127 nc %h %p
 ```
+
+testapp_IP = 5.205.80.235
+testapp_port = 9292 
