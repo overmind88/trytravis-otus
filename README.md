@@ -1,7 +1,7 @@
 # overmind88_infra
 overmind88 Infra repository
 
-ДЗ №3
+#ДЗ №3
 
 bastion_IP = 35.204.213.127  
 someinternalhost_IP = 10.164.0.3
@@ -21,3 +21,26 @@ Host someinternalhost
     User overmind88
     ProxyCommand ssh overmind88@35.204.213.127 nc %h %p
 ```
+
+#ДЗ №4
+
+testapp_IP = 35.205.80.235
+testapp_port = 9292 
+
+Команда для добавления правила файрволла: 
+`gcloud compute firewall-rules create puma-default-server --target-tags="puma-server" --source-ranges="0.0.0.0/0" --allow tcp:9292`
+
+Команда для запуска со startup-скриптом:
+
+```
+gcloud compute instances create reddit-app-2\
+  --boot-disk-size=10GB \
+  --image-family ubuntu-1604-lts \
+  --image-project=ubuntu-os-cloud \
+  --machine-type=g1-small \
+  --tags puma-server \
+  --restart-on-failure \
+  --metadata-from-file startup-script=startup.sh
+
+```
+
