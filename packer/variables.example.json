@@ -1,4 +1,4 @@
 {
-	"proj_id": "infra",
-	"src_img": "ubuntu-1604-lts"
+	"project_id": "infra",
+	"source_image_family": "ubuntu-1604-lts"
 }
