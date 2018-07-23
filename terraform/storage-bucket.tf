@@ -7,7 +7,8 @@ provider "google" {
 module "storage-bucket" {
   source  = "SweetOps/storage-bucket/google"
   version = "0.1.1"
-  name    = ["my-test-bucket-overmind88-1", "my-test-bucket-overmind88-2"]
+  name    = ["overmind88-bucket-test1", "overmind88-bucket-test2"]
+  project = "${var.project}"
 }
 
 output storage-bucket_url {
