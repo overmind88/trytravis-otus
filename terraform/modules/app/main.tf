@@ -21,6 +21,33 @@ resource "google_compute_instance" "app" {
   }
 }
 
+data "template_file" "puma-systemd-service" {
+  template = "${file("${path.module}/files/puma.service.tpl")}"
+
+  vars {
+    database_ip = "${var.database_ip}"
+  }
+}
+
+resource "null_resource" "service" {
+  connection {
+    type        = "ssh"
+    user        = "appuser"
+    host        = "${google_compute_instance.app.network_interface.0.access_config.0.assigned_nat_ip}"
+    agent       = "true"
+    private_key = "${file(var.private_key_path)}"
+  }
+
+  provisioner "file" {
+    content     = "${data.template_file.puma-systemd-service.rendered}"
+    destination = "/tmp/puma.service"
+  }
+
+  provisioner "remote-exec" {
+    script = "${path.module}/files/deploy.sh"
+  }
+}
+
 resource "google_compute_address" "app_ip" {
   name = "reddit-app-ip"
 }
