@@ -1,46 +1,17 @@
 dist: trusty
 sudo: required
 language: bash
-before_install:
-- curl https://raw.githubusercontent.com/express42/otus-homeworks/2018-05/run.sh |
-  bash
-
-sudo: required
-dist: trusty
-language: python
-python: "2.7"
 
 env:
   global:
-  - PATH="${HOME}/bin
-  - TMPDIR="${TMPDIR:-/tmp}"
   - TF_VERSION="0.11.7"
-  - PACKER_VERSION=""1.2.5
 
 before_install:
-    - if ! terraform version ; then
-      mkdir -p "${HOME}/bin"
-      pushd "${TMPDIR}" ;
-      curl -sSL
-        -o terraform.zip
-        "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip" ;
-      unzip terraform.zip ;
-      mv -v terraform "${HOME}/bin/terraform" ;
-      chmod +x "${HOME}/bin/terraform" ;
-      popd ;
-    fi
+  - curl https://raw.githubusercontent.com/express42/otus-homeworks/2018-05/run.sh |
+    bash
+  - wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip -O /tmp/terraform.zip
+  - sudo unzip -d /usr/local/bin/ /tmp/terraform.zip
 
-    - if ! terraform version ; then
-      mkdir -p "${HOME}/bin"
-      pushd "${TMPDIR}" ;
-      curl -sSL
-        -o terraform.zip
-        "https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip" ;
-      unzip packer.zip ;
-      mv -v packer "${HOME}/bin/packer" ;
-      chmod +x "${HOME}/bin/packer" ;
-      popd ;
-    fi
 install:
   - sudo pip install -r ansible/requirements.txt
 
@@ -49,12 +20,14 @@ script:
   - ansible-lint --version
   - terraform version
   - packer version
-  - echo $HOME ; pwd
-  - cd $HOME/overmind88-infra/terraform ; find . -type f -name '*.tf' -exec terraform fmt {} \;
-  - cd $HOME/overmind88-infra/packer ; find . -type f -name '*.json' -exec packer validate -var-file=variables.json.example {} \;
-  - cd $HOME/overmind88-infra/ansible ; find . -type f -name '*.yml' -exec ansible-lint {} \;
-  - touch ../../vault.key; ansible-playbook playbooks/site.yml --syntax-check
+  - find . -type f -name '*.tf' -exec terraform fmt {} \;
+  - find . -type f -name '*.json' -exec packer validate -var-file=packer/variables.json.example {} \;
+  - find . -type f -name '*.yml' -exec ansible-lint {} \;
 
+branches:
+  only:
+    - ansible-3
+    - master
 
 notifications:
   slack:
