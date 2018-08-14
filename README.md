@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/Otus-DevOps-2018-05/overmind88_infra.svg?branch=ansible-3)](https://travis-ci.com/Otus-DevOps-2018-05/overmind88_infra)
+
 # overmind88_infra
 overmind88 Infra repository
 
