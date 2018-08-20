@@ -1,0 +1,45 @@
+dist: trusty
+sudo: required
+language: bash
+
+env:
+  global:
+  - TF_VERSION="0.11.7"
+  - TFLINT_VERSION="0.7.1"
+
+before_install:
+  - curl https://raw.githubusercontent.com/express42/otus-homeworks/2018-05/run.sh |
+    bash
+  - wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip -O /tmp/terraform.zip
+  - sudo unzip -d /usr/local/bin/ /tmp/terraform.zip
+  - wget https://github.com/wata727/tflint/releases/download/v$TFLINT_VERSION/tflint_linux_amd64.zip -O /tmp/tflint.zip
+  - sudo unzip -d /usr/local/bin/ /tmp/tflint.zip
+
+install:
+  - sudo pip install -r ansible/requirements.txt
+
+script:
+  - ansible --version
+  - ansible-lint --version
+  - terraform version
+  - packer version
+  - find . -type f -name '*.tf' -exec terraform fmt {} \;
+  - cp terraform/prod/terraform.tfvars.example terraform/prod/terraform.tfvars
+  - cp terraform/stage/terraform.tfvars.example terraform/stage/terraform.tfvars
+  - terraform get terraform/stage
+  - find terraform/stage -type f -name '*.tf' -exec tflint --ignore-module=SweetOps/storage-bucket/google {} \;
+  - terraform get terraform/prod
+  - find terraform/prod -type f -name '*.tf' -exec tflint --ignore-module=SweetOps/storage-bucket/google {} \;
+  - find . -type f -name '*.json' -exec packer validate -var-file=packer/variables.json.example {} \;
+  - find . -type f -name '*.yml' -exec ansible-lint {} \;
+
+branches:
+  only:
+    - ansible-4
+    - ansible-3
+    - master
+
+notifications:
+  slack:
+    rooms:
+      secure: B/+iSLvV1uGdexzAzoaZhEHLAxa9k0Py2cphKUFLQLBEK+XF2IIMXWhRkB+cDkHlYrzglLLyyc9L9HAmFlQRmlTQhFCZpPNKw0r6q50eDsU9QXyBTc6hQq+T8LxGdBDOrnSV3zypGI5v/JiURADZ8dr8XeF9UXMpZSNzywdxGhH+CGlloaRsl/MKbNZtSskq0YlT8PsA0esAoU8LBqDmqaqy2/JFs4HB1QjBaKr4NRo/Mt1cNNC+vAyYLrs97wBH/3W79pHHxAkw9Op4oI69Zj4jdimiiv5Gs23vgXVmTwm3e2c3OaxTIdGoLehtCLiUhusCpKbD8UzNkPy1+AhwpxHKI/jGOygk0PwQF1us2T2I0ttKCzIBt/dIl6QnDh2LVH2Nwgz7SmSAlRIOqmTqBTt8BjtRsuhHyeBwLB6aWQTIuhD81SMBM2Ca1i78yt5f+1MMhS/m7bL8LQ6F7mciHeN5L+MepUwRItH7W4cXOsf3gYt4VgMrmtzzh5T4AMBJtAmAPGruVR/bYb5ccPYHAoXQHxKWM8L2J0tX06w0bGpmfeAY3eFfXGgr1klqjXmLYp6UJZP2mbjF1ufhAW8cF440FD3J0GniDixibBaWU51oDQ9rWHizCjT97xLPa2IIEytB3k+QikfTDVRri2wN0EDgY6QT6JIozXTRzTtyF7Q=
