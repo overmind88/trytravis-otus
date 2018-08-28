@@ -19,3 +19,17 @@ variable "instance_count" {
   description = "Number of GCP instances"
   default     = 2
 }
+
+variable disk_image {
+  description = "Disk image"
+}
+
+variable zone {
+  description = "Default zone"
+  default     = "europe-west1-b"
+}
+
+variable app_disk_image {
+  description = "Disk image for reddit app"
+  default     = "docker-host"
+}
