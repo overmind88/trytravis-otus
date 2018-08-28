@@ -15,3 +15,4 @@ overmind88 microservices repository
 - Сравнил выводы docker run --rm -ti tehbilly/htop и docker run --rm --pid host -ti tehbilly/htop, во втором случае htop отображается для хоста
 - Собрал образ dind, запустил его, запустил в нём контейнер hello-world
 - Собрал образ для приложения, запустил контейнер с приложением, залил образ в docker-hub, проверил работоспособность образа в локальном докере
+- Задание со звёздочкой: инфраструктурный репозиторий с packer, ansible и terraform
