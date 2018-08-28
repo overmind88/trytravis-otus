@@ -22,8 +22,8 @@ resource "google_compute_instance" "docker-host" {
   }
 }
 
-resource "google_compute_address" "docker_external_ip" {
-  name = "docker_external_ip"
+resource "google_compute_address" "docker-host_ip" {
+  name = "docker-host-ip"
 }
 
 resource "google_compute_firewall" "firewall_puma" {
