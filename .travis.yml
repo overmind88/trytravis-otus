@@ -32,7 +32,7 @@ script:
   - find docker-monolith/infra/terraform -type f -name '*.tf' -exec tflint  {} \;
   - find docker-monolith/infra/ -type f -name '*.json' -exec packer validate -var-file=packer/variables.json.example {} \;
   - find docker-monolith/infra/ -type f -name '*.yml' -exec ansible-lint {} \;
-  - git ls-files --exclude='Dockerfile*' --ignored | xargs --max-lines=1 ${HADOLINT}
+  - find src -type f -name 'Dockerfile*' -exec ${HADOLINT}{} \;
 
 notifications:
   slack:
